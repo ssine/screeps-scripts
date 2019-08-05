@@ -1,6 +1,7 @@
 import * as _ from 'lodash'
 import { run_harvester } from './role/harvester'
-import { roleUpgrader } from './role/upgrader'
+import { run_upgrader } from './role/upgrader'
+import { pre_execution } from './utils'
 
 declare global {
   interface CreepMemory {
@@ -11,15 +12,9 @@ declare global {
 export const loop = () => {
   console.log(`Current game tick is ${Game.time}`);
 
-  for (var name in Memory.creeps) {
-    if (!Game.creeps[name]) {
-      delete Memory.creeps[name];
-      console.log('Clearing non-existing creep memory:', name);
-    }
-  }
+  pre_execution();
 
-  var harvesters = _.filter(Game.creeps, (creep: any) => creep.memory.role == 'harvester');
-  console.log('Harvesters: ' + harvesters.length);
+  let harvesters = _.filter(Game.creeps, (creep: Creep) => creep.memory.role == 'harvester');
 
   if (harvesters.length < 2) {
     var newName = 'Harvester' + Game.time;
@@ -43,7 +38,7 @@ export const loop = () => {
       run_harvester(creep);
     }
     if (creep.memory.role == 'upgrader') {
-      roleUpgrader.run(creep);
+      run_upgrader(creep);
     }
   }
 }
