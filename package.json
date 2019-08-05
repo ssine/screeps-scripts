@@ -1,0 +1,23 @@
+{
+  "name": "screeps-scripts",
+  "version": "0.0.1",
+  "description": "sine's scripts for playing game screeps",
+  "main": "src/main.ts",
+  "scripts": {
+    "start": "grunt"
+  },
+  "author": "sine",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/screeps": "^2.5.4",
+    "grunt": "^1.0.4",
+    "grunt-rollup": "^10.0.0",
+    "grunt-screeps": "^1.4.0",
+    "grunt-ts": "^6.0.0-beta.22",
+    "typescript": "^3.5.3"
+  },
+  "dependencies": {
+    "@types/lodash": "^4.14.136",
+    "lodash": "^4.17.15"
+  }
+}

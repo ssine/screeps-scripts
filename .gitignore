@@ -1,0 +1,7 @@
+screeps.json
+dist
+
+.tscache
+.vscode
+
+node_modules
