@@ -1,18 +1,17 @@
 import * as _ from 'lodash'
 import { run_harvester } from './role/harvester'
 import { run_upgrader } from './role/upgrader'
-import { pre_execution } from './utils'
+import { pre_execution, get_creep_to_spawn } from './utils'
+import { config } from './config'
 
-declare global {
-  interface CreepMemory {
-    [key: string]: any
-  }
-}
+let cur_config = config.current;
 
 export const loop = () => {
   console.log(`Current game tick is ${Game.time}`);
 
   pre_execution();
+
+  let creep_to_spawn = get_creep_to_spawn(cur_config);
 
   let harvesters = _.filter(Game.creeps, (creep: Creep) => creep.memory.role == 'harvester');
 
@@ -23,17 +22,8 @@ export const loop = () => {
       { memory: { role: 'harvester', state: 'init' } });
   }
 
-  if (Game.spawns['Spawn1'].spawning) {
-    var spawningCreep: any = Game.creeps[Game.spawns['Spawn1'].spawning.name];
-    Game.spawns['Spawn1'].room.visual.text(
-      '🛠️' + spawningCreep.memory.role,
-      Game.spawns['Spawn1'].pos.x + 1,
-      Game.spawns['Spawn1'].pos.y,
-      { align: 'left', opacity: 0.8 });
-  }
-
   for (var name in Game.creeps) {
-    var creep: any = Game.creeps[name];
+    let creep = Game.creeps[name];
     if (creep.memory.role == 'harvester') {
       run_harvester(creep);
     }
@@ -41,4 +31,5 @@ export const loop = () => {
       run_upgrader(creep);
     }
   }
+
 }

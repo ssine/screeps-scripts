@@ -1,4 +1,4 @@
-const config = {
+let config = {
   init: {
     // stage when collecting basic energy from scratch
     role: {
