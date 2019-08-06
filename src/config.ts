@@ -1,28 +1,50 @@
-let config = {
-  init: {
-    // stage when collecting basic energy from scratch
-    role: {
-      harvester: {
-        profile: {
-          body: [WORK, CARRY, MOVE],
-          source: 'single',
-          dest: 'any'
-        },
-        number: 2
-      },
-      upgrader: {
-        profile: {
-          body: []
-        },
-        number: 1
-      }
-    },
-    sructure: {
-    }
-  },
-  current: {}
+interface RoleConfig {
+  profile: {
+    body: BodyPartConstant[];
+    [additional_property: string]: any;
+  }
+  number: number;
 }
 
-config.current = config.init;
+interface StructureConfig {
 
-export { config }
+}
+
+interface StageConfig {
+  roles: {
+    [role_name: string]: RoleConfig;
+  }
+  structures: StructureConfig;
+}
+
+let init_config: StageConfig = {
+  // stage when collecting basic energy from scratch
+  roles: {
+    harvester: {
+      profile: {
+        body: [WORK, CARRY, MOVE],
+        source: 'single',
+        dest: 'any'
+      },
+      number: 4
+    },
+    upgrader: {
+      profile: {
+        body: [WORK, CARRY, MOVE]
+      },
+      number: 3
+    },
+    builder: {
+      profile: {
+        body: [WORK, CARRY, MOVE]
+      },
+      number: 5
+    }
+  },
+  structures: {
+  }
+}
+
+let config = init_config;
+
+export { config, StageConfig }

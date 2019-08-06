@@ -1,34 +1,35 @@
 import * as _ from 'lodash'
 import { run_harvester } from './role/harvester'
 import { run_upgrader } from './role/upgrader'
-import { pre_execution, get_creep_to_spawn } from './utils'
+import { run_builder } from './role/builder'
+import { pre_execution, spawn_creeps } from './utils'
 import { config } from './config'
-
-let cur_config = config.current;
 
 export const loop = () => {
   console.log(`Current game tick is ${Game.time}`);
 
   pre_execution();
 
-  let creep_to_spawn = get_creep_to_spawn(cur_config);
+  spawn_creeps(config);
 
-  let harvesters = _.filter(Game.creeps, (creep: Creep) => creep.memory.role == 'harvester');
-
-  if (harvesters.length < 2) {
-    var newName = 'Harvester' + Game.time;
-    console.log('Spawning new harvester: ' + newName);
-    Game.spawns['Spawn1'].spawnCreep([WORK, CARRY, MOVE], newName,
-      { memory: { role: 'harvester', state: 'init' } });
-  }
-
-  for (var name in Game.creeps) {
+  for (let name in Game.creeps) {
     let creep = Game.creeps[name];
-    if (creep.memory.role == 'harvester') {
-      run_harvester(creep);
-    }
-    if (creep.memory.role == 'upgrader') {
-      run_upgrader(creep);
+    switch (creep.memory.role) {
+      case 'harvester': {
+        run_harvester(creep);
+        break;
+      }
+      case 'upgrader': {
+        run_upgrader(creep);
+        break;
+      }
+      case 'builder': {
+        run_builder(creep);
+        break;
+      }
+      default: {
+        console.error(`unimplemented role: ${creep.memory.role}`);
+      }
     }
   }
 
