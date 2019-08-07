@@ -20,31 +20,35 @@ interface StageConfig {
 let init_config: StageConfig = {
   // stage when collecting basic energy from scratch
   roles: {
-    harvester: {
+    worker: {
       profile: {
         body: [WORK, CARRY, MOVE],
         source: 'single',
         dest: 'any'
       },
-      number: 4
-    },
-    upgrader: {
-      profile: {
-        body: [WORK, CARRY, MOVE]
-      },
-      number: 3
-    },
-    builder: {
-      profile: {
-        body: [WORK, CARRY, MOVE]
-      },
-      number: 5
+      number: 20
     }
   },
   structures: {
   }
 }
 
-let config = init_config;
+let second_config: StageConfig = {
+  // stage when collecting basic energy from scratch
+  roles: {
+    worker: {
+      profile: {
+        body: [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
+        source: 'single',
+        dest: 'any'
+      },
+      number: 15
+    }
+  },
+  structures: {
+  }
+}
+
+let config = second_config;
 
 export { config, StageConfig }
