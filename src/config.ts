@@ -1,6 +1,8 @@
+import * as _ from 'lodash'
+
 interface RoleConfig {
   profile: {
-    body: BodyPartConstant[];
+    body: [BodyPartConstant, number][];
     [additional_property: string]: any;
   }
   number: number;
@@ -17,14 +19,12 @@ interface StageConfig {
   structures: StructureConfig;
 }
 
-let init_config: StageConfig = {
+let config_0: StageConfig = {
   // stage when collecting basic energy from scratch
   roles: {
     worker: {
       profile: {
-        body: [WORK, CARRY, MOVE],
-        source: 'single',
-        dest: 'any'
+        body: [[WORK, 1], [CARRY, 1], [MOVE, 1]]
       },
       number: 20
     }
@@ -33,22 +33,41 @@ let init_config: StageConfig = {
   }
 }
 
-let second_config: StageConfig = {
-  // stage when collecting basic energy from scratch
+let config_1: StageConfig = {
+  // use common worker to do every thing
   roles: {
     worker: {
       profile: {
-        body: [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
-        source: 'single',
-        dest: 'any'
+        body: [[WORK, 2], [CARRY, 2], [MOVE, 4]]
       },
-      number: 15
+      number: 7
     }
   },
   structures: {
   }
 }
 
-let config = second_config;
+let config_2: StructureConfig = {
+  // divert the roles, harvester, worker, etc.
+  roles: {
+    harvester: {
+      // ultimate harvester that harvest 3000 resources in 300 ticks
+      // 2 points per WORK, needs 5 
+      profile: {
+        body: [[WORK, 5], [CARRY, 1], [MOVE, 3]] // 700
+      },
+      number: 2
+    },
+    porter: {
+      // move energy to where it is needed: tower, spawner, controller
+      body: [[WORK, 5], [CARRY, 1], [MOVE, 3]] // 700
+    }
+  },
+  structures: {
+
+  }
+}
+
+let config = config_1;
 
 export { config, StageConfig }

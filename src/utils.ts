@@ -1,4 +1,5 @@
 import { StageConfig } from './config'
+import * as _ from 'lodash'
 
 declare global {
   interface CreepMemory {
@@ -67,7 +68,8 @@ function spawn_creeps(config: StageConfig) {
   let count_key = `${role_to_spawn}_count`;
   if (! Memory[count_key]) Memory[count_key] = 0;
   let idx = Memory[count_key] + 1;
-  let ret = spawner.spawnCreep(profile.body, `${role_to_spawn}_${idx}`, 
+  let body_parts = _.flatten(profile.body.map(p => _.times(p[1], _=>p[0])));
+  let ret = spawner.spawnCreep(body_parts, `${role_to_spawn}_${idx}`, 
     { memory: { role: role_to_spawn, state: 'init' } });
   if (ret === OK) Memory[count_key]++;
   return;

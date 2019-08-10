@@ -1,3 +1,9 @@
+/** Worker
+ *  A common worker that does everything at early stage
+ *  Harvest energy and send them to controller, spawner, extensions
+ *  Also builds the contruction sites
+ *  And repair structures
+ */
 import * as _ from 'lodash'
 
 interface WorkerProfile {
@@ -91,12 +97,14 @@ function run_worker(creep: Creep) {
       // first give energy to spawn and extensions
       let targets: any[] = creep.room.find(FIND_STRUCTURES, {
         filter: (structure: Structure) => {
-          if (structure instanceof StructureExtension || structure instanceof StructureSpawn) {
+          if (structure instanceof StructureExtension || 
+              structure instanceof StructureSpawn || 
+              structure instanceof StructureTower) {
             return structure.energy < structure.energyCapacity;
           } else return false;
         }
       });
-      if (targets.length !== 0 && Math.random() < 0.6) {
+      if (targets.length !== 0 && Math.random() < 0.7) {
         creep.memory['state'] = 'goto_structure';
         creep.memory['target'] = _.sample(targets).id;
         break;
@@ -172,7 +180,7 @@ function run_worker(creep: Creep) {
         break;
       }
       let ret = creep.transfer(structure, RESOURCE_ENERGY);
-      if (ret === ERR_NO_PATH || structure.energy >= structure.energyCapacity) {
+      if (ret !== OK || structure.energy >= structure.energyCapacity) {
         creep.memory['state'] = 'find_target';
       }
       break;
@@ -189,7 +197,7 @@ function run_worker(creep: Creep) {
         break;
       }
       let ret = creep.build(site);
-      if (ret === ERR_INVALID_TARGET) creep.memory['state'] = 'find_target';
+      if (ret !== OK) creep.memory['state'] = 'find_target';
       break;
     }
     case 'upgrade': {
@@ -204,7 +212,7 @@ function run_worker(creep: Creep) {
         break;
       }
       let ret = creep.upgradeController(controller);
-      if (ret === ERR_NO_PATH) creep.memory['state'] = 'find_target';
+      if (ret !== OK) creep.memory['state'] = 'find_target';
       break;
     }
     case 'repair': {
@@ -219,7 +227,7 @@ function run_worker(creep: Creep) {
         break;
       }
       let ret = creep.repair(structure);
-      if (ret === ERR_INVALID_TARGET || structure.hits >= structure.hitsMax) {
+      if (ret !== OK || structure.hits >= structure.hitsMax) {
         creep.memory['state'] = 'find_target';
       }
       break;
