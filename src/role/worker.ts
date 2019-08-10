@@ -98,7 +98,7 @@ function run_worker(creep: Creep) {
       targets = creep.room.find(FIND_STRUCTURES, {
         filter: structure => structure.hits < structure.hitsMax
       });
-      if (targets.length !== 0 && Math.random() < 0.33) {
+      if (targets.length !== 0 && Math.random() < 0.1) {
         creep.memory['state'] = 'goto_repair';
         creep.memory['target'] = targets[0].id;
         break;
@@ -117,7 +117,10 @@ function run_worker(creep: Creep) {
     case 'goto_structure': {
       // creep.say('goto structure');      
       let structure: Structure | null = Game.getObjectById(creep.memory['target']);
-      if (structure === null) break;
+      if (structure === null) {
+        creep.memory['state'] = 'find_target';
+        break;
+      };
       creep.moveTo(structure, { visualizePathStyle: { stroke: '#ffaa00' } });
       if (creep.transfer(structure, RESOURCE_ENERGY) != ERR_NOT_IN_RANGE) {
         creep.memory['state'] = 'transfer';
@@ -127,7 +130,10 @@ function run_worker(creep: Creep) {
     case 'goto_repair': {
       // creep.say('goto structure');      
       let structure: Structure | null = Game.getObjectById(creep.memory['target']);
-      if (structure === null) break;
+      if (structure === null) {
+        creep.memory['state'] = 'find_target';
+        break;
+      };
       creep.moveTo(structure, { visualizePathStyle: { stroke: '#ffaa00' } });
       if (creep.repair(structure) != ERR_NOT_IN_RANGE) {
         creep.memory['state'] = 'repair';
@@ -137,7 +143,10 @@ function run_worker(creep: Creep) {
     case 'goto_construction_site': {
       // creep.say('goto contruction site');      
       let site: ConstructionSite | null = Game.getObjectById(creep.memory['target']);
-      if (site === null) break;
+      if (site === null) {
+        creep.memory['state'] = 'find_target';
+        break;
+      };
       creep.moveTo(site, { visualizePathStyle: { stroke: '#ffaa00' } });
       if (creep.build(site) != ERR_NOT_IN_RANGE) {
         creep.memory['state'] = 'build';
@@ -147,7 +156,10 @@ function run_worker(creep: Creep) {
     case 'goto_controller': {
       // creep.say('goto controller');      
       let controller: StructureController | undefined = creep.room.controller;
-      if (controller === undefined) break;
+      if (controller === undefined) {
+        creep.memory['state'] = 'find_target';
+        break;
+      };
       creep.moveTo(controller, { visualizePathStyle: { stroke: '#ffaa00' } });
       if (creep.upgradeController(controller) != ERR_NOT_IN_RANGE) {
         creep.memory['state'] = 'upgrade';
