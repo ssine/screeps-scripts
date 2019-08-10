@@ -5,6 +5,12 @@ declare global {
   interface CreepMemory {
     [key: string]: any
   }
+  interface StructureMemory {
+    [key: string]: any
+  }
+  interface FlagMemory {
+    [key: string]: any
+  }
   interface Memory {
     [name: string]: any;
   }

@@ -53,7 +53,10 @@ function run_worker(creep: Creep) {
     case 'goto_source': {
       // creep.say('goto source');
       let source: Source | null = Game.getObjectById(creep.memory['target']);
-      if (source === null) break;
+      if (source === null) {
+        creep.memory['state'] = 'find_source';
+        break;
+      }
       let ret = creep.moveTo(source, { visualizePathStyle: { stroke: '#ffaa00' } });
       if (ret === ERR_NO_PATH) {
         // get another sourece
@@ -71,7 +74,10 @@ function run_worker(creep: Creep) {
     case 'goto_dropped': {
       // creep.say('goto source');
       let source: Resource | null = Game.getObjectById(creep.memory['target']);
-      if (source === null) break;
+      if (source === null) {
+        creep.memory['state'] = 'find_source';
+        break;
+      }
       let ret = creep.moveTo(source, { visualizePathStyle: { stroke: '#ffaa00' } });
       if (ret !== OK) {
         creep.memory['state'] = 'find_source';

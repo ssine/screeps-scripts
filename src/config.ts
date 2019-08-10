@@ -47,7 +47,7 @@ let config_1: StageConfig = {
   }
 }
 
-let config_2: StructureConfig = {
+let config_2: StageConfig = {
   // divert the roles, harvester, worker, etc.
   roles: {
     harvester: {
@@ -61,16 +61,23 @@ let config_2: StructureConfig = {
     porter: {
       // move energy to where it is needed: tower, spawner, controller
       profile: {
-        body: [[WORK, 5], [CARRY, 5], [MOVE, 3]] // 700
+        body: [[WORK, 2], [CARRY, 6], [MOVE, 4]] // 700
       },
-      number: 2
-    }
+      number: 4
+    },
+    upgrader: {
+      // move energy to where it is needed: tower, spawner, controller
+      profile: {
+        body: [[WORK, 8], [CARRY, 2], [MOVE, 4]] // 1050
+      },
+      number: 1
+    },
   },
   structures: {
 
   }
 }
 
-let config = config_1;
+let config = config_2;
 
 export { config, StageConfig }

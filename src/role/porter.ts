@@ -12,11 +12,13 @@ function run_porter(creep: Creep) {
     }
     case 'find_container': {
       // creep.say('find source');      
-      let containers = creep.room.find(FIND_STRUCTURES, {
-        filter: s => s instanceof StructureContainer && s.store.energy > 200
+      let container = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+        filter: s => s instanceof StructureContainer && s.store.energy > 200 && (
+          s.pos.lookFor(LOOK_FLAGS).filter(f => f.name.includes('upgrade')).length === 0
+        )
       });
-      if (containers.length > 0) {
-        creep.memory['target'] = containers[0].id;
+      if (container !== null) {
+        creep.memory['target'] = container.id;
         creep.memory['state'] = 'goto_container';
       }
       break;
@@ -69,13 +71,24 @@ function run_porter(creep: Creep) {
 
       // then half of the screeps build structures
       targets = creep.room.find(FIND_CONSTRUCTION_SITES);
-      if (targets.length !== 0 && Math.random() < 0.8) {
+      if (targets.length !== 0 && Math.random() < 0.65) {
         creep.memory['state'] = 'goto_construction_site';
         creep.memory['target'] = targets[0].id;
         break;
       }
       // left ones upgrades the controller
-      creep.memory['state'] = 'goto_controller';
+      let flags = creep.room.find(FIND_FLAGS, {
+        filter: f => f.name.includes('upgrade')
+      }) as Flag[];
+      targets = flags.map(f => 
+        f.pos.look().filter(v => v.structure instanceof StructureContainer)[0].structure
+      ).filter(
+        s => s !== undefined && s instanceof StructureContainer && s.store.energy < s.storeCapacity
+      );
+      if (targets.length !== 0) {
+        creep.memory['state'] = 'goto_controller'
+        creep.memory['target'] = targets[0].id;
+      }
       break;
     }
     case 'goto_structure': {
@@ -119,21 +132,21 @@ function run_porter(creep: Creep) {
     }
     case 'goto_controller': {
       // creep.say('goto controller');      
-      let controller: StructureController | undefined = creep.room.controller;
-      if (controller === undefined) {
+      let target: StructureContainer | null = Game.getObjectById(creep.memory['target']);
+      if (target === null) {
         creep.memory['state'] = 'find_target';
         break;
       };
-      creep.moveTo(controller, { visualizePathStyle: { stroke: '#ffaa00' } });
-      if (creep.upgradeController(controller) != ERR_NOT_IN_RANGE) {
-        creep.memory['state'] = 'upgrade';
+      creep.moveTo(target, { visualizePathStyle: { stroke: '#ffaa00' } });
+      if (creep.transfer(target, RESOURCE_ENERGY) === OK) {
+        creep.memory['state'] = 'find_container';
       }
       break;
     }
     case 'transfer': {
       // creep.say('transfer');      
       if (creep.carry.energy == 0) {
-        creep.memory['state'] = 'find_source';
+        creep.memory['state'] = 'find_container';
         break;
       }
       let structure: StructureExtension | StructureSpawn | null = Game.getObjectById(creep.memory['target']);
@@ -150,7 +163,7 @@ function run_porter(creep: Creep) {
     case 'build': {
       // creep.say('build');      
       if (creep.carry.energy == 0) {
-        creep.memory['state'] = 'find_source';
+        creep.memory['state'] = 'find_container';
         break;
       }
       let site: ConstructionSite | null = Game.getObjectById(creep.memory['target']);
@@ -165,7 +178,7 @@ function run_porter(creep: Creep) {
     case 'upgrade': {
       // creep.say('upgrade');      
       if (creep.carry.energy == 0) {
-        creep.memory['state'] = 'find_source';
+        creep.memory['state'] = 'find_container';
         break;
       }
       let controller: StructureController | undefined = creep.room.controller;
@@ -180,7 +193,7 @@ function run_porter(creep: Creep) {
     case 'repair': {
       // creep.say('repair');      
       if (creep.carry.energy == 0) {
-        creep.memory['state'] = 'find_source';
+        creep.memory['state'] = 'find_container';
         break;
       }
       let structure: Structure | null = Game.getObjectById(creep.memory['target']);
@@ -193,6 +206,14 @@ function run_porter(creep: Creep) {
         creep.memory['state'] = 'find_target';
       }
       break;
+    }
+    case 'find_source': {
+      creep.memory['state'] = 'find_container';
+      break;
+    }
+    case 'recycle': {
+      let spawner: StructureSpawn = Object.values(Game.spawns)[0];
+      creep.moveTo(spawner);
     }
   }
 }

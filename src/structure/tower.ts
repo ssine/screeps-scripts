@@ -13,6 +13,15 @@ function run_tower(tower: StructureTower) {
     tower.repair(structures[0]);
     return;
   }
+
+  // then repair other structures
+  let creeps = tower.room.find(FIND_MY_CREEPS, {
+    filter: creep => creep.hits < creep.hitsMax
+  });
+  if (creeps.length > 0) {
+    tower.heal(creeps[0]);
+    return;
+  }
 }
 
 function run_towers_in_room(room_name: string) {

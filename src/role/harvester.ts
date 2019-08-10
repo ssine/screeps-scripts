@@ -72,7 +72,7 @@ function run_harvester(creep: Creep) {
         creep.memory['state'] = 'find_source';
         break;
       }
-      creep.transfer(target, RESOURCE_ENERGY)
+      creep.transfer(target, RESOURCE_ENERGY);
       break;
     }
     case 'pause': {
