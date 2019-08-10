@@ -19,7 +19,7 @@ function run_harvester(creep: Creep) {
         let omit_source: boolean = false;
         let screeps_around = creep.room.lookForAtArea(LOOK_CREEPS, s.pos.y-1, s.pos.x-1, s.pos.y+1, s.pos.x+1, true).map(v => v.creep);
         for (let c of screeps_around) {
-          if (c.memory['role'] === 'harvester') {
+          if (c.memory['role'] === 'harvester' && c.id !== creep.id) {
             omit_source = true;
             break;
           }
