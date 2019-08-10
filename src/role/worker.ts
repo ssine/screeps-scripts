@@ -6,20 +6,6 @@
  */
 import * as _ from 'lodash'
 
-interface WorkerProfile {
-  body: BodyPartConstant[],
-  source: 'single' | 'even',
-  dest: 'any' | 'container' | 'what else?'
-}
-
-function make_worker(profile: WorkerProfile) {
-  let new_name = `worker_${Game.time}`;
-  Game.spawns['Spawn1'].spawnCreep(profile.body, new_name, {
-    memory: Object.assign({ role: 'worker', state: 'init' }, profile)
-  });
-}
-
-
 function find_closest_source(creep: Creep, exclude_list: Source[]): Source | null {
   let exclude_ids = exclude_list.map(v => v.id);
   let sources: Source[] = [];
@@ -119,7 +105,7 @@ function run_worker(creep: Creep) {
       }
       // then half of the screeps build structures
       targets = creep.room.find(FIND_CONSTRUCTION_SITES);
-      if (targets.length !== 0 && Math.random() < 0.5) {
+      if (targets.length !== 0 && Math.random() < 0.8) {
         creep.memory['state'] = 'goto_construction_site';
         creep.memory['target'] = targets[0].id;
         break;
@@ -236,6 +222,5 @@ function run_worker(creep: Creep) {
 }
 
 export {
-  make_worker,
   run_worker
 }

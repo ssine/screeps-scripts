@@ -6,7 +6,7 @@ function run_tower(tower: StructureTower) {
     return;
   }
   // then repair other structures
-  let structures = tower.room.find(FIND_MY_STRUCTURES, {
+  let structures = tower.room.find(FIND_STRUCTURES, {
     filter: structure => structure.hits < structure.hitsMax
   });
   if (structures.length > 0) {
