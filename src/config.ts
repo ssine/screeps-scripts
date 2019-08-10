@@ -60,7 +60,10 @@ let config_2: StructureConfig = {
     },
     porter: {
       // move energy to where it is needed: tower, spawner, controller
-      body: [[WORK, 5], [CARRY, 1], [MOVE, 3]] // 700
+      profile: {
+        body: [[WORK, 5], [CARRY, 5], [MOVE, 3]] // 700
+      },
+      number: 2
     }
   },
   structures: {

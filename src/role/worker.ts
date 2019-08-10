@@ -34,7 +34,13 @@ function run_worker(creep: Creep) {
       break;
     }
     case 'find_source': {
-      // creep.say('find source');      
+      // creep.say('find source');
+      let dropped = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES);
+      if (dropped !== null) {
+        creep.memory['target'] = dropped.id;
+        creep.memory['state'] = 'goto_dropped';
+        break;
+      }
       let closest_source = find_closest_source(creep, []);
       if (closest_source === null) {
         console.log('no available source!');
@@ -45,7 +51,7 @@ function run_worker(creep: Creep) {
       break;
     }
     case 'goto_source': {
-      // creep.say('goto source');      
+      // creep.say('goto source');
       let source: Source | null = Game.getObjectById(creep.memory['target']);
       if (source === null) break;
       let ret = creep.moveTo(source, { visualizePathStyle: { stroke: '#ffaa00' } });
@@ -62,8 +68,20 @@ function run_worker(creep: Creep) {
       }
       break;
     }
+    case 'goto_dropped': {
+      // creep.say('goto source');
+      let source: Resource | null = Game.getObjectById(creep.memory['target']);
+      if (source === null) break;
+      let ret = creep.moveTo(source, { visualizePathStyle: { stroke: '#ffaa00' } });
+      if (ret !== OK) {
+        creep.memory['state'] = 'find_source';
+      } else if (creep.pickup(source) != ERR_NOT_IN_RANGE) {
+        creep.memory['state'] = 'pickup';
+      }
+      break;
+    }
     case 'harvest': {
-      // creep.say('harvest');      
+      // creep.say('harvest');
       let source: Source | null = Game.getObjectById(creep.memory['target']);
       if (source === null) {
         creep.memory['state'] = 'find_source';
@@ -77,14 +95,29 @@ function run_worker(creep: Creep) {
       }
       break;
     }
+    case 'pickup': {
+      // creep.say('harvest');
+      let source: Resource | null = Game.getObjectById(creep.memory['target']);
+      if (source === null) {
+        creep.memory['state'] = 'find_source';
+        break;
+      }
+      let ret = creep.pickup(source);
+      if (ret !== OK) creep.memory['state'] = 'find_source';
+      if (creep.carry.energy >= creep.carryCapacity) {
+        creep.memory['state'] = 'find_target';
+        // creep.memory['state'] = 'find_structure';
+      }
+      break;
+    }
     case 'find_target': {
-      // creep.say('find target');      
+      // creep.say('find target');
       // ordered by priority
       // first give energy to spawn and extensions
       let targets: any[] = creep.room.find(FIND_STRUCTURES, {
         filter: (structure: Structure) => {
-          if (structure instanceof StructureExtension || 
-              structure instanceof StructureSpawn || 
+          if (structure instanceof StructureExtension ||
+              structure instanceof StructureSpawn ||
               structure instanceof StructureTower) {
             return structure.energy < structure.energyCapacity;
           } else return false;
@@ -115,7 +148,7 @@ function run_worker(creep: Creep) {
       break;
     }
     case 'goto_structure': {
-      // creep.say('goto structure');      
+      // creep.say('goto structure');
       let structure: Structure | null = Game.getObjectById(creep.memory['target']);
       if (structure === null) {
         creep.memory['state'] = 'find_target';
@@ -128,7 +161,7 @@ function run_worker(creep: Creep) {
       break;
     }
     case 'goto_repair': {
-      // creep.say('goto structure');      
+      // creep.say('goto structure');
       let structure: Structure | null = Game.getObjectById(creep.memory['target']);
       if (structure === null) {
         creep.memory['state'] = 'find_target';
@@ -141,7 +174,7 @@ function run_worker(creep: Creep) {
       break;
     }
     case 'goto_construction_site': {
-      // creep.say('goto contruction site');      
+      // creep.say('goto contruction site');
       let site: ConstructionSite | null = Game.getObjectById(creep.memory['target']);
       if (site === null) {
         creep.memory['state'] = 'find_target';
@@ -154,7 +187,7 @@ function run_worker(creep: Creep) {
       break;
     }
     case 'goto_controller': {
-      // creep.say('goto controller');      
+      // creep.say('goto controller');
       let controller: StructureController | undefined = creep.room.controller;
       if (controller === undefined) {
         creep.memory['state'] = 'find_target';
@@ -167,7 +200,7 @@ function run_worker(creep: Creep) {
       break;
     }
     case 'transfer': {
-      // creep.say('transfer');      
+      // creep.say('transfer');
       if (creep.carry.energy == 0) {
         creep.memory['state'] = 'find_source';
         break;
@@ -184,7 +217,7 @@ function run_worker(creep: Creep) {
       break;
     }
     case 'build': {
-      // creep.say('build');      
+      // creep.say('build');
       if (creep.carry.energy == 0) {
         creep.memory['state'] = 'find_source';
         break;
@@ -199,7 +232,7 @@ function run_worker(creep: Creep) {
       break;
     }
     case 'upgrade': {
-      // creep.say('upgrade');      
+      // creep.say('upgrade');
       if (creep.carry.energy == 0) {
         creep.memory['state'] = 'find_source';
         break;
@@ -214,7 +247,7 @@ function run_worker(creep: Creep) {
       break;
     }
     case 'repair': {
-      // creep.say('repair');      
+      // creep.say('repair');
       if (creep.carry.energy == 0) {
         creep.memory['state'] = 'find_source';
         break;
