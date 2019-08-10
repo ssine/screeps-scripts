@@ -38,7 +38,6 @@ function run_upgrader(creep: Creep) {
         break;
       }
       let ret = creep.moveTo(new RoomPosition(target.x, target.y, target.roomName), { visualizePathStyle: { stroke: '#ffaa00' } });
-      console.log(ret);
       if (ret !== OK) {
         creep.memory['state'] = 'find_upgrade_point';
       } else if (creep.pos.x === target.x && creep.pos.y === target.y) {

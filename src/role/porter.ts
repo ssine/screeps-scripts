@@ -13,7 +13,7 @@ function run_porter(creep: Creep) {
     case 'find_container': {
       // creep.say('find source');      
       let dropped = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES);
-      if (dropped !== null) {
+      if (dropped !== null && dropped.amount >= 350) {
         creep.memory['target'] = dropped.id;
         creep.memory['state'] = 'goto_dropped';
         break;
@@ -115,9 +115,11 @@ function run_porter(creep: Creep) {
       let flags = creep.room.find(FIND_FLAGS, {
         filter: f => f.name.includes('upgrade')
       }) as Flag[];
-      targets = flags.map(f => 
-        f.pos.look().filter(v => v.type === LOOK_STRUCTURES && v.structure instanceof StructureContainer)[0].structure
-      ).filter(
+      targets = flags.map(f => {
+        let cts = f.pos.look().filter(v => v.type === LOOK_STRUCTURES && v.structure instanceof StructureContainer);
+        if (cts.length === 0) return undefined;
+        return cts[0].structure;
+      }).filter(
         s => s !== undefined && s instanceof StructureContainer && s.store.energy < s.storeCapacity
       );
       if (targets.length !== 0) {
