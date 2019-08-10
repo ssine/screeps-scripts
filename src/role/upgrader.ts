@@ -42,32 +42,22 @@ function run_upgrader(creep: Creep) {
       if (ret !== OK) {
         creep.memory['state'] = 'find_upgrade_point';
       } else if (creep.pos.x === target.x && creep.pos.y === target.y) {
-        creep.memory['state'] = 'collect_energy';
-      }
-      break;
-    }
-    case 'collect_energy': {
-      let container: StructureContainer | null = Game.getObjectById(creep.memory['container']);
-      if (container === null) {
-        creep.memory['state'] = 'find_upgrade_point';
-        break;
-      }
-      let ret = creep.withdraw(container, RESOURCE_ENERGY);
-      if (ret === OK) {
         creep.memory['state'] = 'upgrade';
       }
       break;
     }
     case 'upgrade': {
-      if (creep.carry.energy == 0) {
-        creep.memory['state'] = 'collect_energy';
+      let container: StructureContainer | null = Game.getObjectById(creep.memory['container']);
+      let controller: StructureController | undefined = creep.room.controller;
+      if (container === null) {
+        creep.memory['state'] = 'find_upgrade_point';
         break;
       }
-      let controller: StructureController | undefined = creep.room.controller;
       if (controller === undefined) {
         creep.memory['state'] = 'find_upgrade_point';
         break;
       }
+      creep.withdraw(container, RESOURCE_ENERGY);
       let ret = creep.upgradeController(controller);
       if (ret !== OK) creep.memory['state'] = 'find_upgrade_point';
       break;
