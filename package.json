@@ -10,7 +10,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/screeps": "^2.5.4",
-    "grunt": "^1.0.4",
+    "grunt": "^1.3.0",
     "grunt-rollup": "^10.0.0",
     "grunt-screeps": "^1.4.0",
     "grunt-ts": "^6.0.0-beta.22",
